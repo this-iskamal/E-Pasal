@@ -15,8 +15,12 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
-import logo from "../../assets/images/E logo 1.png";
+import { useEffect } from "react";
+import axios from "axios";
+import { getAuthToken,removeAuthToken,setAuthToken } from "../../utils/JWT";
 
+import logo from "../../assets/images/E logo 1.png";
+import server from "../../utils/server";
 import Sidebarr from "../Sidebar/Sidebarr";
 
 export default function Navbartest() {
@@ -33,7 +37,46 @@ export default function Navbartest() {
     setOpen(false);
   };
 
-  const isLoggedIn = false;
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Get the JWT token from local storage
+    const token = getAuthToken();
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${server}/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        setUser(response.data.user);
+      } catch (error) {
+        // Handle errors, e.g., if the token is invalid or the request fails
+        console.error("Error fetching user data:", error);
+      }
+    };
+    if (token) {
+      // Token exists, you can use it for authenticated requests
+      // You might want to validate the token's expiration here as well
+      // ...
+      setAuthToken(token);
+      fetchUserData();
+      
+      console.log("Token exists:", token);
+    } else {
+      // Token doesn't exist, user is not authenticated
+      // ...
+      console.log("Token does not exist");
+    }
+  }, []);
+
+
+  const handlelogoutclick = ()=>{
+    removeAuthToken();
+    window.location.reload()
+  }
+
   return (
     <>
       {open ? (
@@ -48,31 +91,44 @@ export default function Navbartest() {
         </Drawer>
       ) : null}
 
-      <Navbar onMenuOpenChange={setIsMenuOpen} className="rounded-md">
+      <Navbar className="bg-white" onMenuOpenChange={setIsMenuOpen}>
         <NavbarContent>
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             className="sm:hidden"
           />
           <NavbarBrand className="flex gap-4">
-            <img src={logo} alt="" style={{ height: "36px", width: "36px" }} />
-            <p className="font-bold text-inherit">E-Pasal</p>
+            <img
+              src={logo}
+              alt=""
+              style={{ height: "36px", width: "36px" }}
+              className="cursor-pointer"
+            />
+            <p className="font-bold text-inherit cursor-pointer">E-Pasal</p>
           </NavbarBrand>
         </NavbarContent>
 
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
           <NavbarItem>
-            <Link color="foreground">Home</Link>
+            <Link color="foreground" className="cursor-pointer">
+              Home
+            </Link>
           </NavbarItem>
 
           <NavbarItem>
-            <Link color="foreground" onClick={showDrawer}>
+            <Link
+              color="foreground"
+              onClick={showDrawer}
+              className="cursor-pointer"
+            >
               Products
             </Link>
           </NavbarItem>
 
           <NavbarItem>
-            <Link color="foreground">Become a seller</Link>
+            <Link color="foreground" className="cursor-pointer">
+              Become a seller
+            </Link>
           </NavbarItem>
         </NavbarContent>
         <NavbarContent as="div" justify="end">
@@ -85,39 +141,66 @@ export default function Navbartest() {
                 color="secondary"
                 name="Jason Hughes"
                 size="sm"
-                src={
-                  isLoggedIn
-                    ? "https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                    : "https://i.stack.imgur.com/l60Hf.png"
-                }
+                src={user?`${server}/${user.profileImage}`:null}
               />
             </DropdownTrigger>
-               
+
             <DropdownMenu aria-label="Profile Actions" variant="flat">
-                {isLoggedIn? <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">zoey@example.com</p>
-              </DropdownItem>:null}
-              {isLoggedIn? <DropdownItem key="settings">My Cart</DropdownItem>:null}
-                          
-              {isLoggedIn? <DropdownItem key="team_settings">Team Settings</DropdownItem>:null}
-              {isLoggedIn? <DropdownItem key="analytics">Analytics</DropdownItem>:null}
-              {isLoggedIn?<DropdownItem key="system">System</DropdownItem> :null}
-              {isLoggedIn? <DropdownItem key="configurations">Configurations</DropdownItem>:null}
-              {isLoggedIn? <DropdownItem key="help_and_feedback">
-                Help & Feedback
-              </DropdownItem>:null}
-              {isLoggedIn? <DropdownItem key="logout" color="danger">
-                Log Out
-              </DropdownItem>:null}
-              {isLoggedIn? null:<DropdownItem key="login" onClick={()=>{window.open("/registration","_self")}}>Login</DropdownItem>}
-              {isLoggedIn? null:<DropdownItem key="signup" onClick={()=>{window.open("/registration","_self")}}>Sign Up</DropdownItem>}
-              
-              
+              {user ? (
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-semibold">Signed in as</p>
+                  <p className="font-semibold">{user?user.email:null}</p>
+                </DropdownItem>
+              ) : null}
+              {user ? (
+                <DropdownItem key="settings">My Cart</DropdownItem>
+              ) : null}
+
+              {user ? (
+                <DropdownItem key="team_settings">Team Settings</DropdownItem>
+              ) : null}
+              {user ? (
+                <DropdownItem key="analytics">Analytics</DropdownItem>
+              ) : null}
+              {user ? (
+                <DropdownItem key="system">System</DropdownItem>
+              ) : null}
+              {user ? (
+                <DropdownItem key="configurations">Configurations</DropdownItem>
+              ) : null}
+              {user ? (
+                <DropdownItem key="help_and_feedback">
+                  Help & Feedback
+                </DropdownItem>
+              ) : null}
+              {user ? (
+                <DropdownItem key="logout" color="danger" onClick={handlelogoutclick}>
+                  Log Out
+                </DropdownItem>
+              ) : null}
+              {user ? null : (
+                <DropdownItem
+                  key="login"
+                  onClick={() => {
+                    window.open("/registration", "_self");
+                  }}
+                >
+                  Login
+                </DropdownItem>
+              )}
+              {user ? null : (
+                <DropdownItem
+                  key="signup"
+                  onClick={() => {
+                    window.open("/registration", "_self");
+                  }}
+                >
+                  Sign Up
+                </DropdownItem>
+              )}
             </DropdownMenu>
           </Dropdown>
         </NavbarContent>
-        
 
         <NavbarMenu>
           {menuItems.map((item, index) => (

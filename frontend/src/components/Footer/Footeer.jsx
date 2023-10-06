@@ -22,10 +22,10 @@ export default function FooterWithSocialMediaIcons() {
               <Footer.Title title="about" />
               <Footer.LinkGroup col>
                 <Footer.Link href="#">
-                  Flowbite
+                  E-Pasal
                 </Footer.Link>
                 <Footer.Link href="#">
-                  Tailwind CSS
+                 Products
                 </Footer.Link>
               </Footer.LinkGroup>
             </div>
@@ -36,7 +36,7 @@ export default function FooterWithSocialMediaIcons() {
                   Github
                 </Footer.Link>
                 <Footer.Link href="#">
-                  Discord
+                  Facebook
                 </Footer.Link>
               </Footer.LinkGroup>
             </div>
@@ -56,9 +56,9 @@ export default function FooterWithSocialMediaIcons() {
         <Footer.Divider />
         <div className="w-full sm:flex sm:items-center sm:justify-between">
           <Footer.Copyright
-            by="Flowbite™"
+            by="E-Pasal"
             href="#"
-            year={2022}
+            year={2023}
           />
           <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
             <Footer.Icon

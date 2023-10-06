@@ -6,6 +6,7 @@ import axios from "axios";
 // import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import server from "../../utils/server";
+import { saveRefreshToken } from "../../utils/JWT";
 import { useToast } from "@chakra-ui/react";
 import { Button, Label, TextInput } from "flowbite-react";
 // import Navbartest from "../Navbar/Navbartest";
@@ -72,17 +73,21 @@ function Login() {
         console.log(res.data.success);
         if (res.data.success === true) {
           saveAuthToken(res.data.access);
+          saveRefreshToken(res.data.refresh)
           toast({
             title: res.data.message,
             status: "success",
             duration: 9000,
             isClosable: true,
           });
-          if (res.data.role === "regular") {
-            window.open("/", "_self");
-          } else if (res.data.role === "seller") {
-            window.open("/seller/dashboard", "_self");
-          }
+          setTimeout(() => {
+            if (res.data.role === "regular") {
+              window.open("/", "_self");
+            } else if (res.data.role === "seller") {
+              window.open("/seller/dashboard", "_self");
+            }
+          }, 3000);
+          
         }
         if (res.data.success === false) {
           toast({

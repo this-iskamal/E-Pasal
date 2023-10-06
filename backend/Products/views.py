@@ -23,8 +23,8 @@ class ProductCreateAPIView(APIView):
             for image_data in images_data:
                 ProductImage.objects.create(product=product_instance, image=image_data)
 
-            return Response(product_serializer.data, status=status.HTTP_201_CREATED)
-        return Response(product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message':"successfully created",'data':product_serializer.data,'success':True}, status=status.HTTP_201_CREATED)
+        return Response({'message':product_serializer.errors,'success':False}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(APIView):

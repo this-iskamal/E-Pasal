@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   DesktopOutlined,
   FileOutlined,
@@ -12,7 +12,8 @@ import UploadProducts from "../Dashboard_For_Seller/UploadProducts";
 import SellerNavbar from "../Dashboard_For_Seller/SellerNavbar";
 import server from "../../utils/server";
 import axios from "axios";
-import { getAuthToken,setAuthToken } from "../../utils/JWT";
+import { getAuthToken, setAuthToken } from "../../utils/JWT";
+import Page404 from "../Page404/Page404";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, onClick, children) {
   return {
@@ -33,10 +34,7 @@ const Seller = () => {
 
   const [breadcrumbitem, setBreadcrumbitem] = useState(["Dashboard"]);
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
-
-  
-
-
+  const [staff, setstaff] = useState(false);
 
   useEffect(() => {
     // Get the JWT token from local storage
@@ -45,11 +43,14 @@ const Seller = () => {
       try {
         const response = await axios.get(`${server}/profile`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
-        setUser(response.data.user);
+        await setUser(response.data.user);
+        if (user.is_staff) {
+          setstaff(true);
+        }
       } catch (error) {
         // Handle errors, e.g., if the token is invalid or the request fails
         console.error("Error fetching user data:", error);
@@ -61,15 +62,14 @@ const Seller = () => {
       // ...
       setAuthToken(token);
       fetchUserData();
-      
+
       console.log("Token exists:", token);
     } else {
       // Token doesn't exist, user is not authenticated
       // ...
       console.log("Token does not exist");
     }
-  }, []);
-
+  }, [(user?user.is_staff:null)]);
 
   const handledashboardclick = () => {
     setBreadcrumbitem(["Dashboard"]);
@@ -101,7 +101,7 @@ const Seller = () => {
     getItem("Files", "9", <FileOutlined />),
   ];
 
-  return (
+  return staff === true ? (
     <Layout
       style={{
         minHeight: "100vh",
@@ -150,8 +150,8 @@ const Seller = () => {
               background: colorBgContainer,
             }}
           >
-            {selectedMenuItem === "1" && <SellerDashboard user={user}/>}
-            {selectedMenuItem === "10" && <UploadProducts user={user}/>}
+            {selectedMenuItem === "1" && <SellerDashboard user={user} />}
+            {selectedMenuItem === "10" && <UploadProducts user={user} />}
           </div>
         </Content>
         <Footer
@@ -163,6 +163,8 @@ const Seller = () => {
         </Footer>
       </Layout>
     </Layout>
+  ) : (
+    <Page404 text={"You are not seller. Please redirect to login"}/>
   );
 };
 export default Seller;

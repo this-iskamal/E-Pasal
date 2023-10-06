@@ -8,32 +8,20 @@ import Carousell from "../Carousell/Carousell";
 import Product from "../Products/Product";
 
 
-
 function Homepage() {
-
-
-
   return (
     <Container>
       <Navbartest />
-      <div className="content" >
-
-      <Carousell/>
-      <Product/>
+      <div className="content w-full">
+        <Carousell />
+        
+        <Product />
       </div>
 
       <Footeer />
     </Container>
-
   );
 }
-
-
-
-
-
-
-
 
 const Container = styled.div`
   min-height: 100vh;
@@ -42,7 +30,6 @@ const Container = styled.div`
   flex-direction: column;
 
   .content {
-    flex: 1;
     padding: 20px;
   }
 

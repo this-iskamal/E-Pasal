@@ -3,11 +3,12 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Modal, Upload, Select } from "antd";
 import { getAuthToken,setAuthToken } from "../../utils/JWT";
 import server from "../../utils/server";
+import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 
 
 function UploadProducts({user}) {
-
+const toast = useToast()
   
   const { Option } = Select;
   const [product, setProduct] = useState({
@@ -96,6 +97,26 @@ function UploadProducts({user}) {
       headers: {
         'Content-Type': 'multipart/form-data', // Set content type as multipart form-data
       },
+    }).then((res)=>{
+      if(res.data.success===true){
+        toast({
+          title: res.data.message,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+        setTimeout(() => {
+          window.open('/seller/dashboard','_self')
+        }, 3000);
+      }
+      else{
+        toast({
+          title: "Upload Failed",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      }
     });
 
 
@@ -178,6 +199,12 @@ function UploadProducts({user}) {
               <Option value="Home and Lifestyle">Home and Lifestyle</Option>
               <Option value="Men's Fashion">Men's Fashion</Option>
               <Option value="Women's Fashion">Women's Fashion</Option>
+              <Option value="Cold Drinks">Cold Drinks</Option>
+              <Option value="Tea">Tea</Option>
+              <Option value="Breakfast and Chips">Breakfast and Chips</Option>
+              <Option value="Groceries">Groceries</Option>
+
+
 
               {/* Add more category options */}
             </Select>

@@ -3,7 +3,7 @@
 import { Banner, Button } from 'flowbite-react';
 import { HiX } from 'react-icons/hi';
 
-export default function Banner() {
+export default function Bannerr() {
   return (
     <Banner>
       <div className="fixed left-1/2 top-6 z-50 flex w-[calc(100%-2rem)] -translate-x-1/2 flex-col justify-between rounded-lg border border-gray-100 bg-white p-4 shadow-sm dark:border-gray-600 dark:bg-gray-700 md:flex-row lg:max-w-7xl">

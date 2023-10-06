@@ -99,6 +99,9 @@ function Register() {
             duration: 9000,
             isClosable: true,
           });
+          setTimeout(() => {
+            window.open('/','_self')
+          }, 3000);
           
         }
         if (res.data.success === false) {
