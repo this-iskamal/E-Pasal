@@ -70,7 +70,7 @@ MIDDLEWARE = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://192.168.201.47:3000']
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://192.168.201.47:3000','http://192.168.0.110:3000','http://10.42.0.1:3000','http://192.168.137.80:3000']
 
 
 ROOT_URLCONF = "epasal.urls"

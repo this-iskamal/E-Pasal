@@ -9,6 +9,7 @@ import Login from "./components/Registration/Login";
 import Registration from "./components/Registration/Registraion";
 import Confirmation from "./components/Registration/Confirmation";
 import Seller from "./components/Seller/Seller";
+import SingleProduct from "./components/Products/SingleProduct";
 
 function App() {
   const router = createBrowserRouter([
@@ -35,6 +36,10 @@ function App() {
     {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/products/:product_name/:id",
+      element: <SingleProduct />,
     },
     {
       path: "/register-as-retailer",

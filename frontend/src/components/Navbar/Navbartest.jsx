@@ -15,9 +15,7 @@ import {
   NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
-import { useEffect } from "react";
-import axios from "axios";
-import { getAuthToken,removeAuthToken,setAuthToken } from "../../utils/JWT";
+import { removeAuthToken, useAuth } from "../../utils/JWT";
 
 import logo from "../../assets/images/E logo 1.png";
 import server from "../../utils/server";
@@ -37,39 +35,7 @@ export default function Navbartest() {
     setOpen(false);
   };
 
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    // Get the JWT token from local storage
-    const token = getAuthToken();
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`${server}/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        setUser(response.data.user);
-      } catch (error) {
-        // Handle errors, e.g., if the token is invalid or the request fails
-        console.error("Error fetching user data:", error);
-      }
-    };
-    if (token) {
-      // Token exists, you can use it for authenticated requests
-      // You might want to validate the token's expiration here as well
-      // ...
-      setAuthToken(token);
-      fetchUserData();
-      
-      console.log("Token exists:", token);
-    } else {
-      // Token doesn't exist, user is not authenticated
-      // ...
-      console.log("Token does not exist");
-    }
-  }, []);
+  const user = useAuth();
 
 
   const handlelogoutclick = ()=>{
@@ -91,7 +57,7 @@ export default function Navbartest() {
         </Drawer>
       ) : null}
 
-      <Navbar className="bg-white" onMenuOpenChange={setIsMenuOpen}>
+      <Navbar className="shadow-lg" onMenuOpenChange={setIsMenuOpen}>
         <NavbarContent>
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -100,17 +66,18 @@ export default function Navbartest() {
           <NavbarBrand className="flex gap-4">
             <img
               src={logo}
+              onClick={()=>{window.open('/','_self')}}
               alt=""
               style={{ height: "36px", width: "36px" }}
               className="cursor-pointer"
             />
-            <p className="font-bold text-inherit cursor-pointer">E-Pasal</p>
+            <p className="font-bold text-inherit cursor-pointer" onClick={()=>{window.open('/','_self')}}>E-Pasal</p>
           </NavbarBrand>
         </NavbarContent>
 
         <NavbarContent className="hidden sm:flex gap-4" justify="center">
           <NavbarItem>
-            <Link color="foreground" className="cursor-pointer">
+            <Link color="foreground" className="cursor-pointer" onClick={()=>{window.open('/','_self')}}>
               Home
             </Link>
           </NavbarItem>
@@ -121,7 +88,7 @@ export default function Navbartest() {
               onClick={showDrawer}
               className="cursor-pointer"
             >
-              Products
+              Categories
             </Link>
           </NavbarItem>
 

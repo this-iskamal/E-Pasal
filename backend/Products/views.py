@@ -32,3 +32,14 @@ class ProductListView(APIView):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class ProductDetailView(APIView):
+    def get(self, request, product_name, id):
+        try:
+            product = Product.objects.get(id=id, product_name=product_name)
+            serializer = ProductSerializer(product)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)

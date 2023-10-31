@@ -40,8 +40,10 @@ const Registration = () => {
 };
 
 const Container = styled.div`
-  height: 100vh;
+  min-height: 100vh;
+  max-height: fit-content;
   background-color: #c9d6df;
+  padding: 20px;
 `;
 
 export default Registration;

@@ -6,7 +6,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Breadcrumb, Layout, Menu, Spin, theme } from "antd";
 import SellerDashboard from "../Dashboard_For_Seller/SellerDashboard";
 import UploadProducts from "../Dashboard_For_Seller/UploadProducts";
 import SellerNavbar from "../Dashboard_For_Seller/SellerNavbar";
@@ -163,8 +163,11 @@ const Seller = () => {
         </Footer>
       </Layout>
     </Layout>
-  ) : (
+  ) : (<>
+
+    <Spin tip="Loading..." size="large" style={{display:"flex", justifyContent:"center", alignItems:"center"}}/>
     <Page404 text={"You are not seller. Please redirect to login"}/>
+    </>
   );
 };
 export default Seller;

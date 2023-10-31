@@ -1,4 +1,4 @@
-import {useState,useEffect} from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import server from "./server";
 export const setAuthToken = (token) => {
@@ -19,12 +19,12 @@ export const saveAuthToken = (token) => {
 
 export const saveRefreshToken = (token) => {
   localStorage.setItem("refresh_token", token);
-  
 };
 
 // Function to remove JWT token from local storage
 export const removeAuthToken = () => {
   localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token")
   setAuthToken(null);
 };
 
@@ -34,13 +34,9 @@ export const getAuthToken = () => {
 };
 
 export const getRefreshToken = () => {
-  // Retrieve the refresh token from local storage
-  return localStorage.getItem('refreshToken');
-   
+
+  return localStorage.getItem("refreshToken");
 };
-
-
-
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -52,8 +48,8 @@ export const useAuth = () => {
       try {
         const response = await axios.get(`${server}/profile`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         setUser(response.data.user);
@@ -61,9 +57,12 @@ export const useAuth = () => {
         if (error.response && error.response.status === 401) {
           try {
             const refreshToken = getRefreshToken();
-            const refreshResponse = await axios.post(`${server}/refresh-token`, {
-              refreshToken
-            });
+            const refreshResponse = await axios.post(
+              `${server}/refresh-token`,
+              {
+                refreshToken,
+              }
+            );
 
             const newAccessToken = refreshResponse.data.accessToken;
             setAuthToken(newAccessToken);
@@ -88,7 +87,8 @@ export const useAuth = () => {
     }
   }, []);
 
-  return { user };
+  if(user) return user;
+  else return null;
 };
 
 // Function to set the JWT token in the Authorization header for Axios requests
