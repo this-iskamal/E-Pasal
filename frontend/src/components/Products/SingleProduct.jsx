@@ -31,7 +31,7 @@ import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import server from "../../utils/server";
 import "./Appa.css";
-
+import { Text } from "@chakra-ui/react";
 import Colors from "./Colors";
 import DetailsThumb from "./DetailsThumb";
 import { useParams } from "react-router-dom";
@@ -66,10 +66,33 @@ const SingleProduct = () => {
     }
   }, [index]);
 
+  const isdiscount = (amt, dis) => {
+    if (dis != null) {
+      return (
+        <>
+          <span>
+            NPR{" "}
+            <span style={{ textDecoration: "line-through" }}>
+              {products.price}
+            </span>{" "}
+            <span>{amt - dis}</span>{" "}
+          </span>
+        </>
+      );
+    } else {
+      return (
+        // <Text color="blue.600" fontSize="2xl">
+        //   NPR <span>{amt} </span>{" "}
+        // </Text>
+        <span>NPR {amt}</span>
+      );
+    }
+  };
+
   return (
     <div className="app">
-    {
-        products && <div className="details" key={products.id}>
+      {products && (
+        <div className="details" key={products.id}>
           <div className="big-img">
             <img src={`${server}/${products.image[index].image}`} alt="" />
           </div>
@@ -77,21 +100,23 @@ const SingleProduct = () => {
           <div className="box">
             <div className="row">
               <h2>{products.product_name}</h2>
-              <span>NPR {products.price}</span>
+
+              {isdiscount(products.price, products.discountRate)}
             </div>
             <Colors colors={products.colors} />
 
             <p>{products.description}</p>
             <p>{products.description}</p>
 
-            <DetailsThumb image={products.image} tab={handleTab} myRef={myRef} />
+            <DetailsThumb
+              image={products.image}
+              tab={handleTab}
+              myRef={myRef}
+            />
             <button className="cart">Add to cart</button>
           </div>
         </div>
-    }
-   
-        
-    
+      )}
     </div>
   );
 };
