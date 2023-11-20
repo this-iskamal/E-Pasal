@@ -93,7 +93,7 @@ export default function Navbartest() {
           </NavbarItem>
 
           <NavbarItem>
-            <Link color="foreground" className="cursor-pointer">
+            <Link color="foreground" className="cursor-pointer" onClick={()=>{window.open("seller-registration","_self")}}>
               Become a seller
             </Link>
           </NavbarItem>

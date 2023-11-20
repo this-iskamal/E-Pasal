@@ -1,7 +1,7 @@
 "use client";
 
 import { Sidebar } from "flowbite-react";
-import { HiShoppingBag } from "react-icons/hi";
+// import { HiShoppingBag } from "react-icons/hi";
 
 export default function Sidebarr() {
   return (

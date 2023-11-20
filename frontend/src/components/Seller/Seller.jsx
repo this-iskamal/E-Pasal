@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   DesktopOutlined,
   FileOutlined,
@@ -11,9 +11,9 @@ import SellerDashboard from "../Dashboard_For_Seller/SellerDashboard";
 import UploadProducts from "../Dashboard_For_Seller/UploadProducts";
 import SellerNavbar from "../Dashboard_For_Seller/SellerNavbar";
 import server from "../../utils/server";
-import axios from "axios";
-import { getAuthToken, setAuthToken } from "../../utils/JWT";
+import { useAuth } from "../../utils/JWT";
 import Page404 from "../Page404/Page404";
+import SellerProducts from "../Dashboard_For_Seller/SellerProducts";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, onClick, children) {
   return {
@@ -27,49 +27,54 @@ function getItem(label, key, icon, onClick, children) {
 
 const Seller = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   const [breadcrumbitem, setBreadcrumbitem] = useState(["Dashboard"]);
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
-  const [staff, setstaff] = useState(false);
+  // const [staff, setstaff] = useState(false);
 
-  useEffect(() => {
-    // Get the JWT token from local storage
-    const token = getAuthToken();
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get(`${server}/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  const user = useAuth()
 
-        await setUser(response.data.user);
-        if (user.is_staff) {
-          setstaff(true);
-        }
-      } catch (error) {
-        // Handle errors, e.g., if the token is invalid or the request fails
-        console.error("Error fetching user data:", error);
-      }
-    };
-    if (token) {
-      // Token exists, you can use it for authenticated requests
-      // You might want to validate the token's expiration here as well
-      // ...
-      setAuthToken(token);
-      fetchUserData();
+  
 
-      console.log("Token exists:", token);
-    } else {
-      // Token doesn't exist, user is not authenticated
-      // ...
-      console.log("Token does not exist");
-    }
-  }, [(user?user.is_staff:null)]);
+
+  // useEffect(() => {
+  //   // Get the JWT token from local storage
+  //   const token = getAuthToken();
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const response = await axios.get(`${server}/profile`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       await setUser(response.data.user);
+  //       if (user.is_staff) {
+  //         setstaff(true);
+  //       }
+  //     } catch (error) {
+  //       // Handle errors, e.g., if the token is invalid or the request fails
+  //       console.error("Error fetching user data:", error);
+  //     }
+  //   };
+  //   if (token) {
+  //     // Token exists, you can use it for authenticated requests
+  //     // You might want to validate the token's expiration here as well
+  //     // ...
+  //     setAuthToken(token);
+  //     fetchUserData();
+
+  //     console.log("Token exists:", token);
+  //   } else {
+  //     // Token doesn't exist, user is not authenticated
+  //     // ...
+  //     console.log("Token does not exist");
+  //   }
+  // }, [(user?user.is_staff:null)]);
 
   const handledashboardclick = () => {
     setBreadcrumbitem(["Dashboard"]);
@@ -79,14 +84,14 @@ const Seller = () => {
     setBreadcrumbitem(["Upload Products"]);
     setSelectedMenuItem("10");
   };
+  const handleproductsclick = () =>{
+    setBreadcrumbitem(["Products"])
+    setSelectedMenuItem("2")
+  }
 
   const items = [
     getItem("Dashboard", "1", <PieChartOutlined />, handledashboardclick),
-    getItem("Products", "2", <DesktopOutlined />, [
-      getItem("Electronics", "3"),
-      getItem("Fashion", "4"),
-      getItem("Home Appliances", "5"),
-    ]),
+    getItem("Products", "2", <DesktopOutlined />, handleproductsclick),
     getItem("Orders", "7", <UserOutlined />),
     getItem("Invoices", "11", <TeamOutlined />, [
       getItem("Team 1", "6"),
@@ -101,7 +106,7 @@ const Seller = () => {
     getItem("Files", "9", <FileOutlined />),
   ];
 
-  return staff === true ? (
+  return user && user.is_staff ? (
     <Layout
       style={{
         minHeight: "100vh",
@@ -152,6 +157,7 @@ const Seller = () => {
           >
             {selectedMenuItem === "1" && <SellerDashboard user={user} />}
             {selectedMenuItem === "10" && <UploadProducts user={user} />}
+            {selectedMenuItem === "2" && <SellerProducts user={user} />}
           </div>
         </Content>
         <Footer

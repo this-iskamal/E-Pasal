@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import permission_classes, authentication_classes
 from .models import CustomUser
-from .serializers import UserSerializer, UserProfileSerializer
+from .serializers import UserSerializer, UserProfileSerializer , SellerSerializer
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -35,6 +35,28 @@ class UserRegistrations(APIView):
         )
 
 
+class SellerRegistration(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        print("seller registration attempt")
+        
+        serializer = SellerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    "message": "Successfully registered as a seller",
+                    "success": True,
+                    "seller": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {"message": serializer.errors, "success": False},
+            status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+        )
+
 class UserLogin(APIView):
     permission_classes = [AllowAny]
 
@@ -42,7 +64,7 @@ class UserLogin(APIView):
         email = request.POST.get("email").lower()
         password = request.POST.get("password")
 
-      
+        print(email,password)
         user = authenticate(request, username=email, password=password)
         print("login attempt")
         if user is not None:

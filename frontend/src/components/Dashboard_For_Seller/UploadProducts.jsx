@@ -25,7 +25,7 @@ const toast = useToast()
     colors: [],
     size: [],
     stocks: "",
-    seller:user?user.email:null,
+    seller:user?user.id:null,
 
 
   });

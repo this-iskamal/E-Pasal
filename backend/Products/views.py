@@ -36,6 +36,15 @@ class ProductListView(APIView):
 
 
 class ProductDetailView(APIView):
+
+    def get_product(self,id):
+        print(f"Product ID received: {id}")
+        try:
+            return Product.objects.get(id=id)
+           
+        except Product.DoesNotExist:
+            return None
+
     def get(self, request, product_name, id):
         try:
             product = Product.objects.get(id=id, product_name=product_name)
@@ -43,3 +52,35 @@ class ProductDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+    def delete(self, request,product_name ,id):
+        print(f"Attempting to delete product with ID: {id}")
+
+        product =self.get_product(id)
+        if product:
+            product_images = ProductImage.objects.filter(product=product)
+            for product_image in product_images:
+                product_image.image.delete()
+                product_image.delete()
+            product.delete()
+            return Response({"message":"product deleted"},status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+    
+
+
+class SellerProductsView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, id,format=None):
+        
+        try:
+            print(id)
+            product = Product.objects.filter(seller=id)
+            serializer = ProductSerializer(product , many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        

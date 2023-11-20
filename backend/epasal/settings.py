@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "Account",
+    "CartItems",
     "Products",
     "rest_framework",
     "corsheaders",
@@ -70,7 +71,12 @@ MIDDLEWARE = [
 ]
 
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://192.168.201.47:3000','http://192.168.0.110:3000','http://10.42.0.1:3000','http://192.168.137.80:3000']
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", 'http://192.168.201.47:3000','http://192.168.2.102:3000','http://10.42.0.1:3000','http://192.168.137.80:3000']
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_METHODS = [
+    '*'
+]
+
 
 
 ROOT_URLCONF = "epasal.urls"
@@ -155,12 +161,14 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=660),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 AUTH_USER_MODEL = "Account.CustomUser"
+
+
 
 
 # Media settings

@@ -10,6 +10,9 @@ import Registration from "./components/Registration/Registraion";
 import Confirmation from "./components/Registration/Confirmation";
 import Seller from "./components/Seller/Seller";
 import SingleProduct from "./components/Products/SingleProduct";
+import Success from "./components/Esewa/Success";
+import Failed from "./components/Esewa/Failed";
+import SellerRegistration from "./components/SellerRegistration/SellerRegistration";
 
 function App() {
   const router = createBrowserRouter([
@@ -52,6 +55,18 @@ function App() {
     {
       path: "/seller/dashboard",
       element: <Seller />,
+    },
+    {
+      path: "/esewa-success",
+      element: <Success />,
+    },
+    {
+      path: "/esewa-failed",
+      element: <Failed />,
+    },
+    {
+      path: "/seller-registration",
+      element: <SellerRegistration/>,
     },
   ]);
   return (

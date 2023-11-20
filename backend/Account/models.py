@@ -1,12 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
-
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -29,7 +23,6 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     fullName = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
@@ -39,7 +32,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
 
-    
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
@@ -48,5 +40,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+class Seller(CustomUser):
+    # Additional fields specific to sellers
+   
+    sellerCertificate = models.ImageField(upload_to="seller_certificates", null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        # Set is_staff to True when saving a Seller instance
+        self.is_staff = True
+        super().save(*args, **kwargs)
 
+    def __str__(self):
+        return self.email
