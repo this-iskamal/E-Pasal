@@ -11,9 +11,10 @@ import SellerDashboard from "../Dashboard_For_Seller/SellerDashboard";
 import UploadProducts from "../Dashboard_For_Seller/UploadProducts";
 import SellerNavbar from "../Dashboard_For_Seller/SellerNavbar";
 import server from "../../utils/server";
-import { useAuth } from "../../utils/JWT";
+import { useAuthSeller } from "../../utils/JWT";
 import Page404 from "../Page404/Page404";
 import SellerProducts from "../Dashboard_For_Seller/SellerProducts";
+import SellerOrders from "../Dashboard_For_Seller/SellerOrders";
 const { Header, Content, Footer, Sider } = Layout;
 function getItem(label, key, icon, onClick, children) {
   return {
@@ -36,45 +37,11 @@ const Seller = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useState("1");
   // const [staff, setstaff] = useState(false);
 
-  const user = useAuth()
+  const user = useAuthSeller()
 
   
 
 
-  // useEffect(() => {
-  //   // Get the JWT token from local storage
-  //   const token = getAuthToken();
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const response = await axios.get(`${server}/profile`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       await setUser(response.data.user);
-  //       if (user.is_staff) {
-  //         setstaff(true);
-  //       }
-  //     } catch (error) {
-  //       // Handle errors, e.g., if the token is invalid or the request fails
-  //       console.error("Error fetching user data:", error);
-  //     }
-  //   };
-  //   if (token) {
-  //     // Token exists, you can use it for authenticated requests
-  //     // You might want to validate the token's expiration here as well
-  //     // ...
-  //     setAuthToken(token);
-  //     fetchUserData();
-
-  //     console.log("Token exists:", token);
-  //   } else {
-  //     // Token doesn't exist, user is not authenticated
-  //     // ...
-  //     console.log("Token does not exist");
-  //   }
-  // }, [(user?user.is_staff:null)]);
 
   const handledashboardclick = () => {
     setBreadcrumbitem(["Dashboard"]);
@@ -88,11 +55,15 @@ const Seller = () => {
     setBreadcrumbitem(["Products"])
     setSelectedMenuItem("2")
   }
+  const handleordersclick = () =>{
+    setBreadcrumbitem(["Orders"])
+    setSelectedMenuItem("7")
+  }
 
   const items = [
     getItem("Dashboard", "1", <PieChartOutlined />, handledashboardclick),
     getItem("Products", "2", <DesktopOutlined />, handleproductsclick),
-    getItem("Orders", "7", <UserOutlined />),
+    getItem("Orders", "7", <UserOutlined />,handleordersclick),
     getItem("Invoices", "11", <TeamOutlined />, [
       getItem("Team 1", "6"),
       getItem("Team 2", "8"),
@@ -106,7 +77,7 @@ const Seller = () => {
     getItem("Files", "9", <FileOutlined />),
   ];
 
-  return user && user.is_staff ? (
+  return user && user.seller_status ? (
     <Layout
       style={{
         minHeight: "100vh",
@@ -158,6 +129,7 @@ const Seller = () => {
             {selectedMenuItem === "1" && <SellerDashboard user={user} />}
             {selectedMenuItem === "10" && <UploadProducts user={user} />}
             {selectedMenuItem === "2" && <SellerProducts user={user} />}
+            {selectedMenuItem === "7" && <SellerOrders user={user} />}
           </div>
         </Content>
         <Footer

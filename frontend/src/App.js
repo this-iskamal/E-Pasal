@@ -13,6 +13,24 @@ import SingleProduct from "./components/Products/SingleProduct";
 import Success from "./components/Esewa/Success";
 import Failed from "./components/Esewa/Failed";
 import SellerRegistration from "./components/SellerRegistration/SellerRegistration";
+import Cartitems from "./components/CartItems/Cartitems";
+import PurchaseHistory from "./components/PurcharseHistory/PurchaseHistory";
+import SecondHand from "./components/SecondHandProduct/SecondHand";
+// import ProductAddToCart from "./components/Products/ProductAddToCart";
+import AllNewArrivals from "./components/Products/AllNewArrivals";
+import Freedelivery from "./components/Cotegoriespages/Freedelivery";
+import Newarrival from "./components/Cotegoriespages/Newarrival";
+import Beauty from "./components/Cotegoriespages/Beauty";
+import Electronics from "./components/Cotegoriespages/Electronics";
+import Discount from "./components/Cotegoriespages/Discount";
+import Proudlynepali from "./components/Cotegoriespages/Proudlynepali";
+import Fashion from "./components/Cotegoriespages/Fashion";
+import Home from "./components/Cotegoriespages/Home";
+import SearchProducts from "./components/Products/SearchProducts";
+import SuperUserLogin from "./components/Pages/SuperUserLogin";
+import SuperUser from "./components/Pages/SuperUser";
+import SingleSecondProduct from "./components/SecondHandProduct/SingleSecondProduct";
+
 
 function App() {
   const router = createBrowserRouter([
@@ -20,13 +38,67 @@ function App() {
       path: "/",
       element: <Homepage />,
     },
-    // {
-    //   path: "/test",
-    //   element: <Test />,
-    // },
     {
-      path: "/navtest",
-      element: <Navbartest />,
+      path: "/second-hand-product/:id",
+      element: <SingleSecondProduct />,
+    },
+    {
+      path: "/superuserlogin",
+      element: <SuperUserLogin />,
+    },
+    {
+      path: "/superuser",
+      element: <SuperUser />,
+    },
+    {
+      path: "search/:q",
+      element: <SearchProducts />,
+    },
+    {
+      path: "/freedelivery",
+      element: <Freedelivery />,
+    },
+    {
+      path: "/newarrival",
+      element: <Newarrival />,
+    },
+    {
+      path: "/beauty",
+      element: <Beauty />,
+    },
+    {
+      path: "/electronics",
+      element: <Electronics />,
+    },
+    {
+      path: "/discount",
+      element: <Discount />,
+    },
+    {
+      path: "/proudllynepali",
+      element: <Proudlynepali />,
+    },
+    {
+      path: "/fashion",
+      element: <Fashion />,
+    },
+    {
+      path: "/home",
+      element: <Home />,
+    },
+    
+    {
+      path: "/all-new-arrivals",
+      element: <AllNewArrivals />,
+    },
+    {
+      path: "/secondhandproducts",
+      element: <SecondHand />,
+    },
+    
+    {
+      path: "/purchase-history",
+      element: <PurchaseHistory />,
     },
     {
       path: "/register",
@@ -57,13 +129,21 @@ function App() {
       element: <Seller />,
     },
     {
-      path: "/esewa-success",
+      path: "/esewa-success/:q",
       element: <Success />,
     },
     {
       path: "/esewa-failed",
       element: <Failed />,
     },
+    {
+      path: "/cart-items",
+      element: <Cartitems />,
+    },
+    // {
+    //   path: "/productview-test",
+    //   element: <ProductAddToCart />,
+    // },
     {
       path: "/seller-registration",
       element: <SellerRegistration/>,

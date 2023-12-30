@@ -1,194 +1,156 @@
-import React, { useState } from "react";
-import { Drawer } from "antd";
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Link,
-  DropdownItem,
-  Dropdown,
-  Avatar,
-  DropdownMenu,
-  DropdownTrigger,
-  NavbarMenu,
-  NavbarMenuItem,
-  NavbarMenuToggle,
-} from "@nextui-org/react";
+import React from "react";
+import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import logo from "../../assets/images/E_logo_1.png";
 import { removeAuthToken, useAuth } from "../../utils/JWT";
-
-import logo from "../../assets/images/E logo 1.png";
+import image from "../../assets/images/download.png";
+import cartimage from "../../assets/images/cart/Vector.png";
 import server from "../../utils/server";
-import Sidebarr from "../Sidebar/Sidebarr";
+import {
+  Drawer,
+  DrawerBody,
+  useDisclosure,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  Grid,
+  GridItem,
+} from "@chakra-ui/react";
+import localserver from "../../utils/localserver";
 
 export default function Navbartest() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const menuItems = ["Home", "Products", "Become a seller"];
-  const [open, setOpen] = useState(false);
-  const [placement] = useState("left");
-
-  const showDrawer = () => {
-    setOpen(true);
-  };
-  const onClose = () => {
-    setOpen(false);
-  };
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const user = useAuth();
 
-
-  const handlelogoutclick = ()=>{
+  const handlelogoutclick = () => {
     removeAuthToken();
-    window.location.reload()
-  }
+    window.location.reload();
+  };
+
+  const profile = user ? `${server}${user.profileImage}` : image;
 
   return (
     <>
-      {open ? (
-        <Drawer
-          title="Categories"
-          placement={placement}
-          onClose={onClose}
-          open={open}
-          key={placement}
-        >
-          <Sidebarr />
-        </Drawer>
-      ) : null}
+      <Drawer placement="top" onClose={onClose} isOpen={isOpen}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader borderBottomWidth="1px" className="text-center">
+            Categories
+          </DrawerHeader>
+          <DrawerBody>
+            <Grid templateColumns="repeat(5, 1fr)" gap={6}>
+              <GridItem w="100%" h="10">
+                Electronics
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+              <GridItem w="100%" h="10">
+                Lifestyle
+              </GridItem>
+            </Grid>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
 
-      <Navbar className="shadow-lg" onMenuOpenChange={setIsMenuOpen}>
-        <NavbarContent>
-          <NavbarMenuToggle
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="sm:hidden"
+      <Navbar
+        className="bg-FF8080 flex flex-row items-center justify-center"
+        rounded
+        style={{ backgroundColor: "#BB2525", color: "white", height: "60px" }}
+      >
+        <Navbar.Brand href={localserver}>
+          <img
+            src={logo}
+            className="mr-3 h-6 sm:h-9"
+            alt="Flowbite React Logo"
           />
-          <NavbarBrand className="flex gap-4">
-            <img
-              src={logo}
-              onClick={()=>{window.open('/','_self')}}
-              alt=""
-              style={{ height: "36px", width: "36px" }}
-              className="cursor-pointer"
-            />
-            <p className="font-bold text-inherit cursor-pointer" onClick={()=>{window.open('/','_self')}}>E-Pasal</p>
-          </NavbarBrand>
-        </NavbarContent>
-
-        <NavbarContent className="hidden sm:flex gap-4" justify="center">
-          <NavbarItem>
-            <Link color="foreground" className="cursor-pointer" onClick={()=>{window.open('/','_self')}}>
-              Home
-            </Link>
-          </NavbarItem>
-
-          <NavbarItem>
-            <Link
-              color="foreground"
-              onClick={showDrawer}
-              className="cursor-pointer"
-            >
-              Categories
-            </Link>
-          </NavbarItem>
-
-          <NavbarItem>
-            <Link color="foreground" className="cursor-pointer" onClick={()=>{window.open("seller-registration","_self")}}>
-              Become a seller
-            </Link>
-          </NavbarItem>
-        </NavbarContent>
-        <NavbarContent as="div" justify="end">
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <Avatar
-                isBordered
-                as="button"
-                className="transition-transform"
-                color="secondary"
-                name="Jason Hughes"
-                size="sm"
-                src={user?`${server}/${user.profileImage}`:null}
-              />
-            </DropdownTrigger>
-
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              {user ? (
-                <DropdownItem key="profile" className="h-14 gap-2">
-                  <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">{user?user.email:null}</p>
-                </DropdownItem>
-              ) : null}
-              {user ? (
-                <DropdownItem key="settings">My Cart</DropdownItem>
-              ) : null}
-
-              {user ? (
-                <DropdownItem key="team_settings">Team Settings</DropdownItem>
-              ) : null}
-              {user ? (
-                <DropdownItem key="analytics">Analytics</DropdownItem>
-              ) : null}
-              {user ? (
-                <DropdownItem key="system">System</DropdownItem>
-              ) : null}
-              {user ? (
-                <DropdownItem key="configurations">Configurations</DropdownItem>
-              ) : null}
-              {user ? (
-                <DropdownItem key="help_and_feedback">
-                  Help & Feedback
-                </DropdownItem>
-              ) : null}
-              {user ? (
-                <DropdownItem key="logout" color="danger" onClick={handlelogoutclick}>
-                  Log Out
-                </DropdownItem>
-              ) : null}
-              {user ? null : (
-                <DropdownItem
-                  key="login"
+          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+            E-Pasal
+          </span>
+        </Navbar.Brand>
+        <div className="flex md:order-2">
+          <Avatar
+            alt="User settings"
+            img={cartimage}
+            rounded
+            className="mr-2 "
+            onClick={() => {
+              window.open("/cart-items", "_self");
+            }}
+          />
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={<Avatar alt="User settings" img={profile} rounded />}
+          >
+            {user ? (
+              <>
+                <Dropdown.Header>
+                  <span className="block text-sm">{user && user.fullName}</span>
+                  <span className="block truncate text-sm font-medium">
+                    {user && user.email}
+                  </span>
+                </Dropdown.Header>
+                <Dropdown.Item>Profile</Dropdown.Item>
+                <Dropdown.Item onClick={() => window.open('/secondhandproducts','_self')}>Sell Your Products</Dropdown.Item>
+                <Dropdown.Item
                   onClick={() => {
-                    window.open("/registration", "_self");
+                    window.open("/purchase-history", "_self");
                   }}
                 >
-                  Login
-                </DropdownItem>
-              )}
-              {user ? null : (
-                <DropdownItem
-                  key="signup"
-                  onClick={() => {
-                    window.open("/registration", "_self");
-                  }}
+                  History
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onClick={handlelogoutclick}>
+                  Sign out
+                </Dropdown.Item>
+              </>
+            ) : (
+              <>
+                <Dropdown.Item
+                  onClick={() => window.open("/registration", "_self")}
                 >
-                  Sign Up
-                </DropdownItem>
-              )}
-            </DropdownMenu>
+                  Sign In
+                </Dropdown.Item>
+              </>
+            )}
           </Dropdown>
-        </NavbarContent>
-
-        <NavbarMenu>
-          {menuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === menuItems.length - 1
-                    ? "danger"
-                    : "foreground"
-                }
-                className="w-full"
-                size="lg"
-                onClick={item === "Products" ? showDrawer : null}
-              >
-                {item}
-              </Link>
-            </NavbarMenuItem>
-          ))}
-        </NavbarMenu>
+          <Navbar.Toggle />
+        </div>
+        <Navbar.Collapse>
+          <Navbar.Link href="/" style={{ color: "white" }}>
+            Home
+          </Navbar.Link>
+          <Navbar.Link href="#" onClick={onOpen} style={{ color: "white" }}>
+            Categories
+          </Navbar.Link>
+          <Navbar.Link href="/seller-registration" style={{ color: "white" }}>
+            Become Seller
+          </Navbar.Link>
+          <Navbar.Link href="#" style={{ color: "white" }}>
+            Pricing
+          </Navbar.Link>
+          <Navbar.Link href="#" style={{ color: "white" }}>
+            Contact
+          </Navbar.Link>
+        </Navbar.Collapse>
       </Navbar>
     </>
   );

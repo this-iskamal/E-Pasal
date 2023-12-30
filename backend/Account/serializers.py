@@ -31,7 +31,14 @@
 
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import CustomUser, Seller
+from .models import CustomUser, Seller,Address
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ['id', 'addresss']
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,9 +55,16 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    addresss = AddressSerializer(many=True, read_only=True, source='address_set')
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'fullName', 'phoneNumber', 'is_staff', 'profileImage']
+        fields = ['id', 'email', 'fullName', 'phoneNumber', 'is_staff', 'profileImage','addresss']
+
+class SellerProfileSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Seller
+        fields = ['id', 'email', 'fullName', 'phoneNumber', 'is_staff', 'profileImage','seller_status','sellerCertificate']
 
 class SellerSerializer(UserSerializer):
   

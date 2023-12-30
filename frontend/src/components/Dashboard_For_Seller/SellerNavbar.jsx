@@ -76,7 +76,7 @@ export default function SellerNavbar() {
       {console.log(user)}
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
-          <p className="hidden sm:block font-bold text-inherit">E-Pasal</p>
+          <p className="hidden sm:block font-bold text-inherit">E-Pasal Second Hand Products</p>
         </NavbarBrand>
       </NavbarContent>
 

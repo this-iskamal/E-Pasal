@@ -7,7 +7,6 @@ import {
   Image,
   Stack,
   Text,
-  
   Divider,
   Heading,
   CardFooter,
@@ -16,16 +15,21 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { getAuthToken, useAuth } from "../../utils/JWT";
+import EditProduct from "./EditProduct";
 
 function SellerProducts({ user }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editProduct, setEditProduct] = useState(false);
+  const [productId, setProductId] = useState(""); 
   const toast = useToast();
 
   useEffect(() => {
-    
+    const id = user.id;
+    const id1 = "kamal" + String(id);
+
     axios
-      .get(`${server}/api/products/getsellerproducts/${user.id}`)
+      .get(`${server}/api/products/getsellerproducts/${id1}`)
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
@@ -34,7 +38,7 @@ function SellerProducts({ user }) {
         console.error("Error fetching seller products:", error);
         setLoading(false);
       });
-}, [user.id]);
+  }, [user.id]);
 
   const isdiscount = (amt, dis) => {
     if (dis != null) {
@@ -56,79 +60,104 @@ function SellerProducts({ user }) {
     }
   };
 
-  const handledeleteclick = (product_name,id) => {
+  const handledeleteclick = (product_name, id) => {
     axios.delete(`${server}/api/products/${product_name}/${id}`).then((res) => {
       toast({
-        title:  `${res.data.message}`
-      })
+        title: `${res.data.message}`,
+      });
     });
   };
-  const handleeditclick = (product_id) => {};
+  const handleeditclick = (product_id) => {
+    setProductId(product_id);
+    setEditProduct(true);
+  };
   return (
     <div className="container mx-auto p-2 mt-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">View Products</h2>
-      {loading ? (
-        <p>Loading products...</p>
-      ) : products.length === 0 ? (
-        <p>No products available.</p>
+      {editProduct ? (
+        <EditProduct productId={productId}/>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          {products.map((product) => (
-            <Card className="shadow-lg">
-              <CardBody className="flex justify-center flex-col">
-                {product.image.length > 0 && (
-                  <Image
-                    alt={product.product_name}
-                    src={`${server}${product.image[0].image}`}
-                    borderRadius="lg"
-                    height={300}
-                  />
-                )}
-                <Stack mt="6" spacing="3">
-                  <Heading size="md">{product.product_name}</Heading>
-                  {/* <Text>
-                  {(product.description).slice(0,150)}
-                </Text> */}
-                  {/* {isdiscount ? (
-                  <Text color="blue.600" fontSize="2xl">
-                    NPR{" "}
-                    <span
-                      style={{ textDecoration: "line-through", color: "black" }}
-                    >
-                      {product.price}{" "}
-                    </span>{" "}
-                    {product.price - product.discountRate}
-                  </Text>
-                ) : (
-                  <Text color="blue.600" fontSize="2xl">
-                    NPR <span>{product.price} </span>{" "}
-                  </Text>
-                )} */}
-                  {isdiscount(product.price, product.discountRate)}
-                </Stack>
-              </CardBody>
-              <Divider />
-              <CardFooter>
-                <ButtonGroup spacing="2">
-                  <Button
-                    variant="solid"
-                    colorScheme="blue"
-                    onClick={() => handleeditclick(product.id)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="solid"
-                    colorScheme="red"
-                    onClick={() => handledeleteclick(product.product_name,product.id)}
-                  >
-                    Delete
-                  </Button>
-                </ButtonGroup>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        <>
+          <h2 className="text-2xl font-bold mb-4 text-center">View Products</h2>
+          {loading ? (
+            <p>Loading products...</p>
+          ) : products.length === 0 ? (
+            <p>No products available.</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {products.map((product) => {
+                return (
+                  <div className="relative overflow-hidden transition duration-300 transform bg-white rounded-lg shadow-lg hover:shadow-xl">
+                    <img
+                      src={`${server}${product.image[0].image}`}
+                      alt={product.product_name}
+                      className="object-cover w-full h-48 sm:h-56 md:h-64"
+                    />
+                    {product.discountRate && (
+                      <div className="absolute top-0 left-0 p-2 bg-blue-500 text-white rounded-bl-lg">
+                        <span className="text-sm font-semibold">
+                          Save Rs {product.discountRate.slice(0, -3)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold mb-2">
+                        {product.product_name.length > 20
+                          ? `${product.product_name.slice(0, 20)}...`
+                          : product.product_name}
+                      </h3>
+                      <div className="flex items-center mb-2">
+                        <span className="text-lg font-bold mr-2">
+                          Rs {product.price - product.discountRate}
+                        </span>
+                        {product.discountRate && (
+                          <span className="text-red-500 line-through">
+                            Rs {product.price.slice(0, -3)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span
+                          className={
+                            product.isFreeDelivery
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }
+                        >
+                          {product.isFreeDelivery
+                            ? "Free Delivery"
+                            : "Delivery Charges Apply"}
+                        </span>
+                        <span
+                          className={
+                            product.stocks ? "text-green-500" : "text-red-500"
+                          }
+                        >
+                          {product.stocks ? "In Stock" : "Out of Stock"}
+                        </span>
+                      </div>
+                      <div className="flex flex-row justify-between mt-4">
+                        <div
+                          className="p-2 bg-blue-500 text-white rounded-bl-lg cursor-pointer"
+                          onClick={() => handleeditclick(product.id)}
+                        >
+                          <span className="text-sm font-semibold">Edit</span>
+                        </div>
+                        <div
+                          className="p-2 bg-red-500 text-white rounded-bl-lg cursor-pointer"
+                          onClick={() =>
+                            handledeleteclick(product.product_name, product.id)
+                          }
+                        >
+                          <span className="text-sm font-semibold">Delete</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

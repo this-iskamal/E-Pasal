@@ -1,215 +1,308 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// import {
-//   Card,
-//   CardBody,
-//   Image,
-//   Stack,
-//   Text,
-//   Divider,
-//   Heading,
-//   CardFooter,
-//   Button,
-//   ButtonGroup,
-//   useToast,
-// } from "@chakra-ui/react";
-import { Card } from 'flowbite-react';
 import server from "../../utils/server";
-import {useAuth} from "../../utils/JWT"
-import { useToast } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  InputGroup,
+  Carousel,
+} from "react-bootstrap";
+import Autosuggest from "react-autosuggest";
 
+import FlashSale from "./FlashSale";
+import RecommendedForYou from "./RecommendedForYou";
+import NewArrivals from "./NewArrivals";
+import Categories from "./Categories";
 
 function Product() {
   const [products, setProducts] = useState([]);
-  const toast = useToast()
+  const [suggestions, setSuggestions] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [productsToSend, setProductsToSend] = useState([]);
 
   useEffect(() => {
-    // Fetch products from the backend API when the component mounts
-    axios.get(`${server}/api/products/view`).then((response) => {
-      setProducts(response.data); // Assuming the response contains an array of products
-    });
-  }, []);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        axios
+          .get(`${server}/api/products/search/?query=`)
+          .then((response) => setProductsToSend(response.data));
+        const response = await axios.get(
+          `${server}/api/products/search/?query=${searchQuery}`
+        );
+        setProducts(response.data);
 
-  const isdiscount = (amt, dis) => {
-    if (dis != null) {
-      return (
-        <Text color="blue.600" fontSize="2xl">
-          NPR{" "}
-          <span style={{ textDecoration: "line-through", color: "black" }}>
-            {amt}{" "}
-          </span>{" "}
-          {amt - dis}
-        </Text>
+        // Extract unique categories if categories state is empty
+        if (categories.length === 0) {
+          const uniqueCategories = [
+            ...new Set(response.data.map((product) => product.category)),
+          ];
+          setCategories(uniqueCategories);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [searchQuery]);
+
+  const handleSearch = async () => {
+    try {
+      
+      const response = await axios.get(
+        `${server}/api/products/search/?query=${searchQuery}`
       );
-    } else {
-      return (
-        <Text color="blue.600" fontSize="2xl">
-          NPR <span>{amt} </span>{" "}
-        </Text>
-      );
-    }
-  };
 
-
-  const handlebuynowclick = (id,name) =>{
-    window.open(`/products/${name}/${id}`,'_self')
-  }
-  const isperson = useAuth();
-
-  const handlecartclick = (event,id) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (isperson === null) {
-      toast({
-        title: "Error adding to cart",
-        description: "You must log in first",
-        status: "error",
-        duration: 9000,
-        isClosable: true,
-      });
-      setTimeout(() => {
-        window.open("/registration", "_self");
-      }, 3000);
-    } else {
-      const selectedProduct = id;
-
+      setProducts(response.data);
       axios
-        .post(`${server}/add-to-cart/`, { selectedProduct })
+        .post(`${server}/api/products/recommended/?query=${searchQuery}`)
         .then((response) => {
-          if (response.data.success === false)
-            toast({
-              title: `${response.data.detail}`,
-              status: "error",
-            });
-          else
-            toast({
-              title: `${response.data.detail}`,
-              status: "success",
-            });
+          console.log(response.data);
+          
         });
+        window.open(`/search/${searchQuery}`, "_self");
+        
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      const uniqueCategories = [
+        ...new Set(products && products.map((product) => product.category)),
+      ];
+      setCategories(uniqueCategories);
     }
   };
+
+  const handleInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSuggestionsFetchRequested = ({ value }) => {
+    // Fetch suggestions from the backend based on the current input value
+    axios
+      .get(`${server}/api/products/search/?query=${value}`)
+      .then((response) => setSuggestions(response.data))
+      .catch((error) => console.error("Error fetching suggestions:", error));
+  };
+
+  const handleSuggestionsClearRequested = () => {
+    setSuggestions([]);
+  };
+
+  const handleSuggestionSelected = (_, { suggestion }) => {
+    // Redirect to the selected product page
+    window.open(
+      `/products/${suggestion.product_name}/${suggestion.id}`,
+      "_self"
+    );
+  };
+
+  const getSuggestionValue = (suggestion) => suggestion.product_name;
+
+  const renderSuggestion = (suggestion) => <div>{suggestion.product_name}</div>;
+
+  const handlebuynowclick = (id, name) => {
+    window.open(`/products/${name}/${id}`, "_self");
+  };
+
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category === "All" ? null : category); // Set the selected category
+  };
+
+  const filteredProducts = selectedCategory
+    ? products.filter((product) => product.category === selectedCategory)
+    : products;
+  const flashSale = productsToSend.filter((product) => product.isFlashSale);
+  const newArrivals = productsToSend.filter((product) => product.isNewArrival);
+  const mostSold = products.filter((product) => product.sold > 0);
+  const onSale = products.filter(
+    (product) => parseFloat(product.discountRate) > 0
+  );
 
   return (
-    <div className="container mx-auto p-2 mt-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">View Products</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {products.map((product) => (
-          // <Card className="shadow-lg">
-          //   <CardBody className="flex justify-center flex-col">
-          //     {product.image.length > 0 && (
-          //       <Image
-          //         alt={product.product_name}
-          //         src={`${server}${product.image[0].image}`}
-          //         borderRadius="lg"
-          //         height={300}
-          //       />
-          //     )}
-          //     <Stack mt="6" spacing="3">
-          //       <Heading size="md">{product.product_name}</Heading>
-          //       {/* <Text>
-          //         {(product.description).slice(0,150)}
-          //       </Text> */}
-          //       {/* {isdiscount ? (
-          //         <Text color="blue.600" fontSize="2xl">
-          //           NPR{" "}
-          //           <span
-          //             style={{ textDecoration: "line-through", color: "black" }}
-          //           >
-          //             {product.price}{" "}
-          //           </span>{" "}
-          //           {product.price - product.discountRate}
-          //         </Text>
-          //       ) : (
-          //         <Text color="blue.600" fontSize="2xl">
-          //           NPR <span>{product.price} </span>{" "}
-          //         </Text>
-          //       )} */}
-          //       {isdiscount(product.price, product.discountRate)}
-          //     </Stack>
-          //   </CardBody>
-          //   <Divider />
-          //   <CardFooter>
-          //     <ButtonGroup spacing="2">
-          //       <Button variant="solid" colorScheme="blue" onClick={()=>handlebuynowclick(product.id,product.product_name)}>
-          //         Buy now
-          //       </Button>
-          //       <Button variant="ghost" colorScheme="blue" onClick={()=>handlecartclick(product.id)}>
-          //         Add to cart
-          //       </Button>
-          //     </ButtonGroup>
-          //   </CardFooter>
-          // </Card>
-          <Card
-          className="max-w-sm"
-          imgAlt="product image"
-          imgSrc={`${server}/${product.image[0].image}`}
-          onClick={()=>handlebuynowclick(product.id,product.product_name)}
-        >
-          <a href="#">
-            <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-              {product.product_name}
-            </h5>
-          </a>
-          <div className="mb-5 mt-2.5 flex items-center">
-            <svg
-              className="h-5 w-5 text-yellow-300"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
+    <div className="container p-1 mb-1" style={{ backgroundColor: "#F3EEEA" }}>
+      <Container className="my-3">
+        <div className=" flex flex-row mb-2  justify-content-center">
+          <Autosuggest
+            suggestions={suggestions}
+            onSuggestionsFetchRequested={handleSuggestionsFetchRequested}
+            onSuggestionsClearRequested={handleSuggestionsClearRequested}
+            getSuggestionValue={getSuggestionValue}
+            renderSuggestion={renderSuggestion}
+            highlightFirstSuggestion={true}
+            focusInputOnSuggestionClick={true}
+            inputProps={{
+              placeholder: "Enter keywords",
+              value: searchQuery,
+              onChange: handleInputChange,
+              style: {
+                width: "100%",
+                height: "38px",
+                borderRadius: "5px 0 0 5px", // Adjust the width as needed
+                border: "1px solid #ced4da", // Outline color
+                borderTopRightRadius: "0", // Remove border radius on the right side
+              },
+            }}
+            onSuggestionSelected={handleSuggestionSelected}
+            suggestionsContainerProps={{
+              style: {
+                position: "absolute",
+                top: "calc(100% + 5px)", // Adjust the spacing between input and suggestions
+                width: "100%",
+                maxHeight: "2px", // Adjust the max height as needed
+                overflowY: "auto",
+                border: "1px solid #ced4da", // Outline color
+                borderRadius: "0 0 5px 5px", // Add border radius to the bottom
+              },
+            }}
+          />
+
+          <Button
+            variant="primary"
+            type="button"
+            onClick={handleSearch}
+            style={{ borderRadius: "0 5px 5px 0", height: "38px" }}
+          >
+            Search
+          </Button>
+        </div>
+      </Container>
+
+      <Carousel style={{ maxHeight: "300px", marginBottom: "20px" }}>
+        {/* Add carousel items with product images */}
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src="https://icms-image.slatic.net/images/ims-web/419aa759-3aa4-4d69-8fc5-77eaf2034cc8.jpg"
+            alt="First slide"
+            style={{ maxHeight: "300px", borderRadius: "10px" }}
+          />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img
+            className="d-block w-100"
+            src="https://icms-image.slatic.net/images/ims-web/cffa205b-dc11-40a3-82fa-752c7ef1dfc4.jpg_1200x1200.jpg"
+            alt="Second slide"
+            style={{ maxHeight: "300px", borderRadius: "10px" }}
+          />
+        </Carousel.Item>
+        {/* Add more items as needed */}
+      </Carousel>
+
+      <Categories />
+
+      <FlashSale filteredProducts={flashSale} />
+
+      <RecommendedForYou />
+
+      <NewArrivals filteredProducts={newArrivals} />
+
+      <div style={{ backgroundColor: "white" }} className="p-2 rounded-md">
+        <div className="m-3 mb-4">
+          <div className="flex space-x-2  items-center justify-center">
+            {/* Add the "All" button at the beginning */}
+            <Button
+              variant={selectedCategory ? "outline-primary" : "primary"}
+              onClick={() => handleCategoryClick("All")}
             >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-            <svg
-              className="h-5 w-5 text-yellow-300"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-            <svg
-              className="h-5 w-5 text-yellow-300"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-            <svg
-              className="h-5 w-5 text-yellow-300"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-            <svg
-              className="h-5 w-5 text-yellow-300"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-            <span className="ml-3 mr-2 rounded bg-cyan-100 px-2.5 py-0.5 text-xs font-semibold text-cyan-800 dark:bg-cyan-200 dark:text-cyan-800">
-              5.0
-            </span>
+              All
+            </Button>
+
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              categories.map((category, index) => (
+                <Button
+                  key={index}
+                  variant={
+                    category === selectedCategory
+                      ? "primary"
+                      : "outline-primary"
+                  }
+                  onClick={() => handleCategoryClick(category)}
+                >
+                  {category}
+                </Button>
+              ))
+            )}
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-xl font-bold text-gray-900 dark:text-white">NPR {product.price}</span>
-            <a
-              href="#"
-              onClick={(event)=>handlecartclick(event,product.id)}
-              className="rounded-lg bg-cyan-700 px-2 py-2.5 text-center text-sm font-medium text-white hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800"
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className="relative overflow-hidden transition duration-300 transform bg-gray-100 rounded-md shadow-md hover:shadow-lg"
+              onClick={() =>
+                handlebuynowclick(product.id, product.product_name)
+              }
             >
-              Add to cart
-            </a>
-          </div>
-        </Card>
-        ))}
+              <div className="relative group">
+                <img
+                  src={`${server}${product.image[0].image}`}
+                  alt={product.product_name}
+                  className="object-cover w-full h-40 sm:h-48 md:h-56 transition-transform transform-gpu group-hover:scale-105"
+                />
+                {product.discountRate && product.discountRate > 0 && (
+                  <div className="absolute top-0 left-0 p-2 bg-blue-500 text-white rounded-bl-md">
+                    <span className="text-xs font-semibold">
+                      Save Rs {product.discountRate.slice(0, -3)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="p-3">
+                <h3 className="text-base font-semibold mb-2">
+                  {product.product_name.length > 20
+                    ? `${product.product_name.slice(0, 20)}...`
+                    : product.product_name}
+                </h3>
+                <div className="flex items-center mb-2">
+                  <span className="text-base font-bold mr-2 text-blue-500">
+                    Rs {product.price - product.discountRate}
+                  </span>
+                  {product.discountRate && product.discountRate > 0 && (
+                    <span className="text-xs text-red-500 line-through">
+                      Rs {product.price.slice(0, -3)}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span
+                    className={
+                      product.freeDelivery ? "text-green-500" : "text-red-500"
+                    }
+                  >
+                    {product.freeDelivery
+                      ? "Free Delivery"
+                      : "Delivery Charges Apply"}
+                  </span>
+                  <span
+                    className={
+                      product.stocks ? "text-green-500" : "text-red-500"
+                    }
+                  >
+                    {product.stocks ? "In Stock" : "Out of Stock"}
+                  </span>
+                </div>
+                {product.discount_percent !== undefined &&
+                  product.discount_percent > 0 && (
+                    <div className="mt-1 text-xs text-gray-600">
+                      {`Discount: ${product.discount_percent.toFixed(2)}%`}
+                    </div>
+                  )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

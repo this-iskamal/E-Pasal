@@ -86,7 +86,10 @@ function Login() {
             } else if (res.data.role === "seller") {
               window.open("/seller/dashboard", "_self");
             }
-          }, 3000);
+            else if (res.data.role === "superuser") {
+              window.open("/superuser", "_self");
+            }
+          }, 1000);
           
         }
         if (res.data.success === false) {

@@ -4,6 +4,9 @@ from .models import *
 
 
 admin.site.register(Product)
+admin.site.register(SearchHistoryModel)
+admin.site.register(ProductDetail)
+
 
 
 

@@ -23,8 +23,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('Account.urls')),
     path('',include('Products.urls')),
-    path('',include('CartItems.urls'))
-
+    path('',include('CartItems.urls')),
+    path('',include('PurchaseHistory.urls')),
+    path('',include('Review.urls')),
+    path('',include('SuperUser.urls')),
+    path('',include('SecondHand.urls')),
+    path('',include('ChatEngine.urls')),
 ]
 
 if settings.DEBUG:

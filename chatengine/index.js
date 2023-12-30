@@ -19,7 +19,7 @@ app.post("/authenticate", async (req, res) => {
       },
       {
         headers: {
-          "private-key": "744bebec-09e1-4d7f-a30b-430874f03ef3",
+          "private-key": "69b0983d-f3dc-4240-92a2-63a8acfe2c92",
         },
       }
     );
@@ -29,6 +29,6 @@ app.post("/authenticate", async (req, res) => {
   }
 });
 
-app.listen(3001,"192.168.0.110", () => {
+app.listen(3001, () => {
   console.log("Server started on port 3001");
 });

@@ -38,7 +38,7 @@ export const getRefreshToken = () => {
   return localStorage.getItem("refreshToken");
 };
 
-export const useAuth = () => {
+export const  useAuth = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -86,6 +86,64 @@ export const useAuth = () => {
       console.log("Token does not exist");
     }
   }, []);
+
+  
+
+  if(user) return user;
+  else return null;
+};
+
+
+export const  useAuthSeller = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = getAuthToken();
+
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${server}/seller/profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUser(response.data.user);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          try {
+            const refreshToken = getRefreshToken();
+            const refreshResponse = await axios.post(
+              `${server}/refresh-token`,
+              {
+                refreshToken,
+              }
+            );
+
+            const newAccessToken = refreshResponse.data.accessToken;
+            setAuthToken(newAccessToken);
+            fetchUserData();
+          } catch (refreshError) {
+            console.error("Error refreshing token:", refreshError);
+            // Handle refresh token error, e.g., redirect to login page
+          }
+        } else {
+          // Handle other errors
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    if (token) {
+      setAuthToken(token);
+      fetchUserData();
+      console.log("Token exists:", token);
+    } else {
+      console.log("Token does not exist");
+    }
+  }, []);
+
+  
 
   if(user) return user;
   else return null;

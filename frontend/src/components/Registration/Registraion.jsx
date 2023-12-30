@@ -17,7 +17,7 @@ const Registration = () => {
 
   return (
     <Container>
-      <Navbartest />
+
       <div className="flex flex-col items-center mt-5">
         <div className="mb-1">
           <button

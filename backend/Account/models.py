@@ -29,6 +29,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     phoneNumber = models.CharField(max_length=10, unique=True)
     profileImage = models.ImageField(upload_to="profile_images", null=True, blank=True)
     is_active = models.BooleanField(default=True)
+    seller_status = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
 
@@ -52,3 +53,9 @@ class Seller(CustomUser):
 
     def __str__(self):
         return self.email
+    
+class Address(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    addresss = models.CharField(max_length=255)
+    
+

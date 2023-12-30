@@ -4,6 +4,7 @@ import axios from "axios";
 import { Button, Checkbox, Label, TextInput, FileInput } from "flowbite-react";
 import Link from "antd/es/typography/Link";
 import { Container, Box, useToast } from "@chakra-ui/react";
+import server from "../../utils/server";
 
 export default function SellerRegistration() {
   const [formData, setFormData] = useState({
@@ -69,7 +70,7 @@ export default function SellerRegistration() {
 
     try {
       await axios
-        .post("http://192.168.2.102:8000/seller/register", formData, {
+        .post(`${server}/seller/register`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -78,7 +79,7 @@ export default function SellerRegistration() {
           if (res.data.success) {
             showToast(res.data.message, "success");
             setTimeout(() => {
-              window.open("registration","_self")
+              window.open("registration", "_self");
             }, 2500);
           } else if (res.data.message.email) {
             showToast(res.data.message.email[0], "error");
