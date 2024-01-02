@@ -31,7 +31,7 @@
 
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
-from .models import CustomUser, Seller,Address
+from .models import CustomUser, Seller,Address,PasswordResetToken
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,12 +64,13 @@ class SellerProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Seller
-        fields = ['id', 'email', 'fullName', 'phoneNumber', 'is_staff', 'profileImage','seller_status','sellerCertificate']
+        fields = ['id', 'email', 'fullName', 'phoneNumber', 'is_staff','pan', 'profileImage','seller_status','sellerCertificate']
 
 class SellerSerializer(UserSerializer):
   
     # Additional fields specific to sellers
     sellerCertificate = serializers.ImageField(required=False, allow_null=True)
+    pan = serializers.CharField(required=False, allow_null=True)
 
     def create(self, validated_data):
         password = validated_data.get('password', None)
@@ -80,8 +81,12 @@ class SellerSerializer(UserSerializer):
         return seller
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ['sellerCertificate']
+        fields = UserSerializer.Meta.fields + ['sellerCertificate','pan']
         extra_kwargs = {'password': {'write_only': True}}
 
+class PasswordResetTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PasswordResetToken
+        fields = ['token']
 
 

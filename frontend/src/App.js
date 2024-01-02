@@ -30,6 +30,8 @@ import SearchProducts from "./components/Products/SearchProducts";
 import SuperUserLogin from "./components/Pages/SuperUserLogin";
 import SuperUser from "./components/Pages/SuperUser";
 import SingleSecondProduct from "./components/SecondHandProduct/SingleSecondProduct";
+import ForgotPassword from "./components/Registration/ForgotPassword";
+import PasswordReset from "./components/Registration/PasswordReset";
 
 
 function App() {
@@ -37,6 +39,14 @@ function App() {
     {
       path: "/",
       element: <Homepage />,
+    },
+    {
+      path: "/reset-password/:token",
+      element: <PasswordReset />,
+    },
+    {
+      path: "/forgot-password",
+      element: <ForgotPassword />,
     },
     {
       path: "/second-hand-product/:id",

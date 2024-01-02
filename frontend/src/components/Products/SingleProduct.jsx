@@ -147,8 +147,8 @@ const SingleProduct = () => {
       const randomIndex = Math.floor(Math.random() * characters.length);
       result += characters.charAt(randomIndex);
     }
-
-    return result + products.id;
+    return (result+products.id)
+    
   }
 
   const handlebuyclick = (path) => {

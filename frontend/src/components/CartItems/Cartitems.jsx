@@ -301,7 +301,7 @@ const handlebuyclick = (path) => {
                                   style={{ width: "80px" }}
                                 >
                                   <MDBTypography tag="h5" className="mb-0">
-                                   {product.price.slice(0, -3)-product.discountRate}
+                                    Rs {product.price.slice(0, -3)-product.discountRate}
                                   </MDBTypography>
                                 </div>
 
@@ -344,7 +344,7 @@ const handlebuyclick = (path) => {
 
                         <MDBBtn color="info" block size="lg">
                           <div className="d-flex justify-content-between" onClick={()=>{handlebuyclick(path)}}>
-                            <span>Rs {totalPrice}</span>
+                            <span>Rs {totalPrice+100}</span>
                             <span>
                               Checkout{" "}
                               <i className="fas fa-long-arrow-alt-right ms-2"></i>

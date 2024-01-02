@@ -1,15 +1,10 @@
 import React, { useState } from "react";
-// import styled from "styled-components";
-// import { Link } from "react-router-dom";
-// import md5 from "md5";
 import axios from "axios";
-// import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import server from "../../utils/server";
 import { saveRefreshToken } from "../../utils/JWT";
 import { useToast } from "@chakra-ui/react";
 import { Button, Label, TextInput } from "flowbite-react";
-// import Navbartest from "../Navbar/Navbartest";
 
 function Login() {
   const toast = useToast();
@@ -73,7 +68,7 @@ function Login() {
         console.log(res.data.success);
         if (res.data.success === true) {
           saveAuthToken(res.data.access);
-          saveRefreshToken(res.data.refresh)
+          saveRefreshToken(res.data.refresh);
           toast({
             title: res.data.message,
             status: "success",
@@ -85,12 +80,10 @@ function Login() {
               window.open("/", "_self");
             } else if (res.data.role === "seller") {
               window.open("/seller/dashboard", "_self");
-            }
-            else if (res.data.role === "superuser") {
+            } else if (res.data.role === "superuser") {
               window.open("/superuser", "_self");
             }
           }, 1000);
-          
         }
         if (res.data.success === false) {
           toast({
@@ -111,12 +104,10 @@ function Login() {
       });
   };
 
-
-
   const saveAuthToken = (token) => {
     localStorage.setItem("access_token", token);
-    
   };
+
   return (
     <div className="register_form w-full flex justify-center items-center flex-col mt-5">
       <h6 className="mb-4 text-2xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-4xl">
@@ -158,10 +149,16 @@ function Login() {
             type="password"
           />
         </div>
+        
 
         <Button type="submit" className="w-full " onClick={handleregisterclick}>
           Login
         </Button>
+        <div className="mt-1 text-center">
+          <a href="/forgot-password" className="text-sm text-gray-500 hover:underline">
+            Forgot your password?
+          </a>
+        </div>
       </form>
     </div>
   );

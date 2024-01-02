@@ -3,13 +3,19 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import permission_classes, authentication_classes,api_view
-from .models import CustomUser,Address,Seller
+from .models import CustomUser,Address,Seller,PasswordResetToken
 from .serializers import UserSerializer, UserProfileSerializer , SellerSerializer,AddressSerializer,SellerProfileSerializer
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import authenticate,login
+from django.core.mail import send_mail
 import json
+from django.shortcuts import get_object_or_404
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
+import secrets
 
 class UserRegistrations(APIView):
     permission_classes = [AllowAny]
@@ -204,5 +210,76 @@ def update_seller(request):
             {"message": "You are not authorized", "success": False},
             status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
         )
+    
+
+class ForgotPasswordView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email', None)
+        
+        if not email:
+            return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.get(email=email)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User with this email does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Generate a unique token with user ID
+        token = f"{secrets.token_urlsafe(30)}-{user.id}"
+
+        # Save the token in the database
+        reset_token = PasswordResetToken.objects.create(user=user, token=token)
+
+        # Create the reset link
+        reset_link = f"{settings.FRONTEND_URL}/reset-password/{token}/"
+
+        # Subject and from_email
+        subject = 'Reset Your Password - E-pasal'
+        from_email = settings.DEFAULT_FROM_EMAIL
+
+        # Email content
+        context = {'reset_link': reset_link, 'site_name': 'E-pasal'}
+        html_content = render_to_string('Account/password_reset_email.html', context)
+        text_content = f"Click the following link to reset your password:\n\n{reset_link}"
+
+        # Create the email message
+        msg = EmailMultiAlternatives(subject, text_content, from_email, [email])
+        msg.attach_alternative(html_content, "text/html")
+
+        # Send the email
+        msg.send()
+
+        return Response({'message': 'Password reset link has been sent to your email.'}, status=status.HTTP_200_OK)
+    
+
+
+class ValidateResetTokenView(APIView):
+    
+    def get(self, request, token):
+        # Check if the token is valid
+        user = get_object_or_404(CustomUser, passwordresettoken__token=token)
+        return Response({'isValid': True}, status=status.HTTP_200_OK)
+
+class ResetPasswordView(APIView):
+    def post(self, request, token):
+        # Check if the token is valid
+        user = get_object_or_404(CustomUser, passwordresettoken__token=token)
+
+        # Get new password from request data
+        new_password = request.data.get('password')
+        confirm_password = request.data.get('confirmPassword')
+
+        # Perform password validation if needed
+        if new_password != confirm_password:
+            return Response({'message': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the user's password
+        user.set_password(new_password)
+        user.save()
+
+        # Optional: Remove the used password reset token
+        user.passwordresettoken_set.all().delete()
+
+        return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
     
     

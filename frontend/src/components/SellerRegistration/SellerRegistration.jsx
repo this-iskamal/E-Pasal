@@ -13,6 +13,7 @@ export default function SellerRegistration() {
     password: "",
     cpassword: "",
     phoneNumber: "",
+    pan:"",
     profileImage: null,
     sellerCertificate: null,
     agree: false,
@@ -103,6 +104,7 @@ export default function SellerRegistration() {
     });
   };
 
+  
   return (
     <Container className="flex flex-col items-center  h-screen">
       {/* Top Heading */}
@@ -195,6 +197,23 @@ export default function SellerRegistration() {
             value={formData.phoneNumber}
             onChange={handleChange}
           />
+        </div>
+        <div>
+          <div className="mb-2 block">
+            <Label htmlFor="pan" value="Your PAN" />
+          </div>
+          <TextInput
+            id="pan"
+            type="number"
+            placeholder="pan number"
+            name="pan"
+            value={formData.pan}
+            required
+            shadow
+            onChange={handleChange}
+          />
+         
+      
         </div>
 
         <div id="fileUpload" className="max-w-md">

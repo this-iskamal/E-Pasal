@@ -49,7 +49,7 @@ function Success() {
     {
       title: item ? item.product_name : null,
       img: item ? `${server}/${item.image[0].image}` : null,
-      price: item ? item.price : null,
+      price: item ? item.discountRate?(item.price-item.discountRate) : item.price:null,
     },
   ];
   useEffect(() => {
@@ -66,8 +66,8 @@ function Success() {
     console.log(user);
     axios
       .post(`${server}/api/purchase-history/create/`, {
-        user: user.id,
-        product: item.id,
+        user: user&&user.id,
+        product: item&&item.id,
         quantity: parseInt(q, 10),
         total_cost: parseInt(amt, 10),
         shipping_address: (user.addresss[0].addresss),
@@ -134,33 +134,26 @@ function Success() {
         )}
         {!showSpinner && (
           <div className="flex flex-col justify-center items-center">
+            <p className="mt-4">
+              Thank you for your purchase. Your order is:{" "}
+           
+            </p>
             {list.map((item, index) => (
               <Card
                 shadow="sm"
                 key={index}
                 isPressable
                 onPress={() => console.log("item pressed")}
+                
               >
-                <CardBody className="overflow-visible p-0">
-                  <Image
-                    shadow="sm"
-                    radius="lg"
-                    width="100%"
-                    alt={item.title}
-                    className="w-full object-cover h-[140px]"
-                    src={item.img}
-                  />
-                </CardBody>
+                
                 <CardFooter className="text-small justify-between">
                   <b>{item.title}</b>
-                  <p className="text-default-500">{item.price}</p>
+                  
                 </CardFooter>
               </Card>
             ))}
-            <p className="mt-4">
-              Thank you for your purchase. Your order is:{" "}
-              <b>{item && item.title}</b>
-            </p>
+            
             <p>
               Amount Paid: <b>{item && amt}</b>{" "}
             </p>

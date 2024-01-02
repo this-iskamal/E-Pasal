@@ -138,7 +138,7 @@ const ManageSellers = () => {
           <AlertDialogCloseButton />
           <AlertDialogBody>
             {!selectedSeller?.seller_status
-              ? `Do you want to confirm ${selectedSeller?.fullName} as a legitimate seller?`
+              ? `Do you want to confirm ${selectedSeller?.fullName} as a legitimate seller? The PAN number is ${selectedSeller?.pan}`
               : `Are you sure you want to delete ${selectedSeller?.fullName}?`}
           </AlertDialogBody>
           <AlertDialogFooter>

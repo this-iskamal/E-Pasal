@@ -119,6 +119,7 @@ class ConfirmOrderView(APIView):
 
 class CreatePurchaseHistoryView(APIView):
     def post(self, request, format=None):
+        
         serializer = PurchaseHistorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

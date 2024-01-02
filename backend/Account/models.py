@@ -45,6 +45,7 @@ class Seller(CustomUser):
     # Additional fields specific to sellers
    
     sellerCertificate = models.ImageField(upload_to="seller_certificates", null=True, blank=True)
+    pan = models.CharField(max_length=9, unique=True, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Set is_staff to True when saving a Seller instance
@@ -57,5 +58,13 @@ class Seller(CustomUser):
 class Address(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     addresss = models.CharField(max_length=255)
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    token = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Token for {self.user.fullName}"
     
 

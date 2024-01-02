@@ -31,33 +31,7 @@ const FlashSale = ({filteredProducts}) => {
     <div style={{ backgroundColor: "white" }} className="rounded-md my-3 p-3">
       <div className="flex items-center justify-between mb-2">
         <span className="text-black font-bold text-xl">Flash Sale</span>
-        <div className="flex items-center">
-            <span className="text-black font-semibold mr-2">Ends in :</span>
-          <div className="mr-3">
-            <div className="bg-blue-500 text-white p-1 rounded-md text-center">
-              <span className="text-lg font-semibold">
-                {String(countdown.hours).padStart(2, "0")} 
-              </span>
-             
-            </div>
-          </div>
-          <div className="mr-3">
-            <div className="bg-blue-500 text-white p-1 rounded-md text-center">
-              <span className="text-lg font-semibold">
-                {String(countdown.minutes).padStart(2, "0")}
-              </span>
-             
-            </div>
-          </div>
-          <div>
-            <div className="bg-blue-500 text-white p-1 rounded-md text-center">
-              <span className="text-lg font-semibold">
-                {String(countdown.seconds).padStart(2, "0")}
-              </span>
         
-            </div>
-          </div>
-        </div>
         <button className="bg-blue-700 text-white border border-blue-700 px-4 py-2 rounded-md hover:bg-blue-800 transition duration-300">
           Load more
         </button>

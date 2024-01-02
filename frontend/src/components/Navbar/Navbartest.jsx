@@ -144,9 +144,7 @@ export default function Navbartest() {
           <Navbar.Link href="/seller-registration" style={{ color: "white" }}>
             Become Seller
           </Navbar.Link>
-          <Navbar.Link href="#" style={{ color: "white" }}>
-            Pricing
-          </Navbar.Link>
+      
           <Navbar.Link href="#" style={{ color: "white" }}>
             Contact
           </Navbar.Link>

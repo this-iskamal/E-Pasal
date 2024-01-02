@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserRegistrations , UserLogin , UserProfile , SellerRegistration,store_address,Sellers,delete_selller,update_seller,SellerProfile
+from .views import UserRegistrations , UserLogin , UserProfile , SellerRegistration,store_address,Sellers,delete_selller,update_seller,SellerProfile,ForgotPasswordView,ValidateResetTokenView,ResetPasswordView
 
 
 urlpatterns = [
@@ -12,5 +12,8 @@ urlpatterns = [
     path("address",store_address,name='store-address'),
     path("getSellers",Sellers.as_view(),name='get-sellers'),
     path("deleteSeller",delete_selller,name='delete-seller'),
+    path('reset-password/', ForgotPasswordView.as_view(), name='forgot-password'),
     path("updateSeller",update_seller,name='update-seller'),
+    path('validate-reset-token/<str:token>/', ValidateResetTokenView.as_view(), name='validate-reset-token'),
+    path('reset-password/<str:token>/', ResetPasswordView.as_view(), name='reset-password'),
 ]   
