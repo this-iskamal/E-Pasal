@@ -190,7 +190,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'doctorsewa770@gmail.com'  # Your Gmail address
-EMAIL_HOST_PASSWORD = 'fdeywujnzgnltfzf'  # Your Gmail password
+EMAIL_HOST_PASSWORD = ''  # Your Gmail password
 
 # Default From Email Address
 DEFAULT_FROM_EMAIL = 'doctorsewa770@gmail.com'  # Replace with your email address
@@ -207,7 +207,7 @@ EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='doctorsewa770@gmail.com')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='fdeywujnzgnltfzf')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='doctorsewa770@gmail.com')
 
